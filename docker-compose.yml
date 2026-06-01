@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  mysql-write:
+    image: mysql:8.0
+    container_name: mysql-write
+    environment:
+      MYSQL_ROOT_PASSWORD: primarypass
+      MYSQL_DATABASE: aula-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - write_data:/var/lib/mysql
+
+  mysql-read-1:
+    image: mysql:8.0
+    container_name: mysql-read-1
+    environment:
+      MYSQL_ROOT_PASSWORD: replicapass
+      MYSQL_DATABASE: aula-db
+    ports:
+      - "3307:3306"
+    volumes:
+      - read_1_data:/var/lib/mysql
+
+  mysql-read-2:
+    image: mysql:8.0
+    container_name: mysql-read-2
+    environment:
+      MYSQL_ROOT_PASSWORD: replicapass
+      MYSQL_DATABASE: aula-db
+    ports:
+      - "3308:3306"
+    volumes:
+      - read_2_data:/var/lib/mysql
+
+volumes:
+  write_data:
+  read_1_data:
+  read_2_data:
