@@ -1,5 +1,6 @@
 import prisma from '../db/proxy.js';
 import dotenv from 'dotenv';
+import { buildQueryOptions } from '../utils/queryBuilder.js';
 
 dotenv.config();
 
@@ -15,8 +16,16 @@ export async function createCliente({ nome, email }) {
   });
 }
 
-export async function listClientes() {
-  return prisma.cliente.findMany();
+export async function listClientes(options = {}) {
+  const query = buildQueryOptions(options, GROUP_NAME);
+  return prisma.cliente.findMany(query);
+}
+
+export async function updateCliente(id, data) {
+  return prisma.cliente.update({
+    where: { id: parseInt(id) },
+    data
+  });
 }
 
 export async function getClienteById(id) {

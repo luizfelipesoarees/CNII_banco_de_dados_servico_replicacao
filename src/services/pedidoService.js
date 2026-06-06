@@ -1,11 +1,12 @@
 import prisma from '../db/proxy.js';
 import dotenv from 'dotenv';
+import { buildQueryOptions } from '../utils/queryBuilder.js';
 
 dotenv.config();
 
 const GROUP_NAME = process.env.GROUP_NAME || 'Grupo_Fabio';
 
-export async function createPedido({ cliente_id, itens }) {
+export async function createPedido({ cliente_id, itens, status }) {
   if (!itens || itens.length === 0) {
     throw new Error('O pedido deve conter pelo menos um item.');
   }
@@ -51,7 +52,7 @@ export async function createPedido({ cliente_id, itens }) {
       data: {
         cliente_id: parseInt(cliente_id),
         valor_total: valor_total,
-        status: 'FINALIZADO',
+        status: status || 'FINALIZADO',
         criado_por: GROUP_NAME
       }
     });
@@ -71,9 +72,13 @@ export async function createPedido({ cliente_id, itens }) {
   });
 }
 
-export async function getPedidoCompleto(pedidoId) {
-  return prisma.pedido.findUnique({
-    where: { id: parseInt(pedidoId) },
+export async function getPedidoCompleto(pedidoId, options = {}) {
+  const where = { id: parseInt(pedidoId) };
+  if (options.filtrarGrupo === 'true') {
+    where.criado_por = GROUP_NAME;
+  }
+  return prisma.pedido.findFirst({
+    where,
     include: {
       cliente: true,
       itens: {
@@ -85,10 +90,39 @@ export async function getPedidoCompleto(pedidoId) {
   });
 }
 
-export async function getHistoricoCliente(clienteId) {
+export async function getItensPedido(pedidoId, options = {}) {
+  const where = { pedido_id: parseInt(pedidoId) };
+  if (options.filtrarGrupo === 'true') {
+    where.pedido = { criado_por: GROUP_NAME };
+  }
+  return prisma.pedidoItem.findMany({
+    where,
+    include: {
+      produto: true
+    }
+  });
+}
+
+export async function getHistoricoCliente(clienteId, options = {}) {
+  const where = { cliente_id: parseInt(clienteId) };
+  if (options.filtrarGrupo === 'true') {
+    where.criado_por = GROUP_NAME;
+  }
   return prisma.pedido.findMany({
-    where: { cliente_id: parseInt(clienteId) },
+    where,
+    include: {
+      itens: {
+        include: {
+          produto: true
+        }
+      }
+    },
     orderBy: { criado_em: 'desc' },
     take: 5
   });
+}
+
+export async function listPedidos(options = {}) {
+  const query = buildQueryOptions(options, GROUP_NAME);
+  return prisma.pedido.findMany(query);
 }

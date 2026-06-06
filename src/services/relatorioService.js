@@ -1,7 +1,17 @@
 import prisma from '../db/proxy.js';
+import dotenv from 'dotenv';
 
-export async function getRelatorioVendas() {
+dotenv.config();
+const GROUP_NAME = process.env.GROUP_NAME || 'Grupo_Fabio';
+
+export async function getRelatorioVendas(options = {}) {
+  const where = {};
+  if (options.filtrarGrupo === 'true') {
+    where.criado_por = GROUP_NAME;
+  }
+
   const result = await prisma.pedido.aggregate({
+    where,
     _count: {
       id: true
     },
