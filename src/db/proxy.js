@@ -22,8 +22,7 @@ function logRead(operation, replicaName) {
 }
 
 export async function syncLocalReplicas() {
-  const isLocal = process.env.DATABASE_READ_1_URL && process.env.DATABASE_READ_1_URL.includes('localhost');
-  if (!isLocal) return;
+  if (process.env.SIMULATE_REPLICATION !== 'true') return;
 
   try {
     const clientes = await prismaWrite.cliente.findMany();
