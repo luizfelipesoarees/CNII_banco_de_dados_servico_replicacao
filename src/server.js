@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 import healthRouter from './routes/health.js';
 import clientesRouter from './routes/clientes.js';
@@ -11,6 +13,29 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API - Serviços de Banco de Dados',
+      version: '1.0.0',
+      description: 'Rotas da aplicação expostas via Swagger',
+    },
+    components: {
+      parameters: {
+        pageParam: { in: 'query', name: 'page', schema: { type: 'integer', default: 1 }, description: 'Número da página' },
+        sizeParam: { in: 'query', name: 'size', schema: { type: 'integer', default: 10 }, description: 'Tamanho da página' },
+        orderByParam: { in: 'query', name: 'orderBy', schema: { type: 'string', example: 'criado_em,desc' }, description: 'Ordenação' },
+        filtrarGrupoParam: { in: 'query', name: 'filtrarGrupo', schema: { type: 'boolean' }, description: 'Filtrar pelo grupo atual' }
+      }
+    }
+  },
+  apis: ['./src/routes/*.js'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 
