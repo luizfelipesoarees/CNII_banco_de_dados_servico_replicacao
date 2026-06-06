@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     container_name: mysql-write
     environment:
-      MYSQL_ROOT_PASSWORD: primarypass
+      MYSQL_ROOT_PASSWORD: mysql
       MYSQL_DATABASE: aula-db
     ports:
       - "3306:3306"
@@ -16,7 +16,7 @@ services:
     image: mysql:8.0
     container_name: mysql-read-1
     environment:
-      MYSQL_ROOT_PASSWORD: replicapass
+      MYSQL_ROOT_PASSWORD: mysql
       MYSQL_DATABASE: aula-db
     ports:
       - "3307:3306"
@@ -27,7 +27,7 @@ services:
     image: mysql:8.0
     container_name: mysql-read-2
     environment:
-      MYSQL_ROOT_PASSWORD: replicapass
+      MYSQL_ROOT_PASSWORD: mysql
       MYSQL_DATABASE: aula-db
     ports:
       - "3308:3306"
