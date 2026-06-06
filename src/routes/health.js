@@ -3,6 +3,15 @@ import prisma from '../db/proxy.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     responses:
+ *       200:
+ *         description: Sucesso
+ */
 router.get('/', async (req, res) => {
   try {
     await prisma.$primary.$queryRaw`SELECT 1`;
