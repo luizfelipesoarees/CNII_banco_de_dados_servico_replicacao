@@ -5,7 +5,7 @@ Projeto desenvolvido para a matéria de Computação em Nuvem II da Fatec.
 O objetivo deste sistema é demonstrar, na prática, o funcionamento de um proxy que roteia requisições de banco de dados em um cluster. As requisições de escrita (INSERT, UPDATE, DELETE) são direcionadas para o banco **Primary (Mestre)**, enquanto as requisições de leitura (SELECT, COUNT, AVG) são balanceadas em formato *Round-Robin* entre diversas **Réplicas (Slaves)**, aliviando a carga do servidor principal.
 
 ## 👥 Integrantes
-* Felipe Avelino Pedaes;
+* Felipe Avelino Pedaes - Participação confirmada;
 * Gabriel Resende Spirlandelli;
 * Henrique Almeida Florentino;
 * Luiz Felipe Vieira Soares;
