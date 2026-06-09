@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
-import { prismaWrite } from './write.js';
+import { prismaWrites } from './write.js';
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ if (replicaUrls.length === 0) {
   console.warn('⚠️ Nenhuma réplica configurada. Usando o PRIMARY para operações de leitura.');
   prismaReplicas.push({
     name: 'PRIMARY (Fallback)',
-    client: prismaWrite
+    client: prismaWrites[0].client
   });
 } else {
   replicaUrls.forEach(rep => {

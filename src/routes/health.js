@@ -14,7 +14,15 @@ const router = Router();
  */
 router.get('/', async (req, res) => {
   try {
-    await prisma.$primary.$queryRaw`SELECT 1`;
+    const primaryChecks = [];
+    for (const primary of prisma.$primaries) {
+      try {
+        await primary.client.$queryRaw`SELECT 1`;
+        primaryChecks.push({ name: primary.name, status: 'ONLINE' });
+      } catch (error) {
+        primaryChecks.push({ name: primary.name, status: 'OFFLINE', error: error.message });
+      }
+    }
 
     const replicaChecks = [];
     for (const replica of prisma.$replicas) {
@@ -26,10 +34,13 @@ router.get('/', async (req, res) => {
       }
     }
 
-    res.json({
-      status: 'UP',
+    const allPrimariesOffline = primaryChecks.every(p => p.status === 'OFFLINE');
+    const allReplicasOffline = replicaChecks.every(r => r.status === 'OFFLINE');
+
+    res.status(allPrimariesOffline && allReplicasOffline ? 500 : 200).json({
+      status: allPrimariesOffline && allReplicasOffline ? 'DOWN' : 'UP',
       timestamp: new Date(),
-      database_write: 'ONLINE',
+      database_writes: primaryChecks,
       database_reads: replicaChecks
     });
   } catch (error) {

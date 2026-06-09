@@ -20,7 +20,22 @@ export async function createProduto({ descricao, categoria, valor, estoque }) {
 
 export async function listProdutos(options = {}) {
   const query = buildQueryOptions(options, GROUP_NAME);
-  return prisma.produto.findMany(query);
+  const [data, totalElements] = await Promise.all([
+    prisma.produto.findMany(query),
+    prisma.produto.count({ where: query.where })
+  ]);
+  
+  const take = query.take || 10;
+  const page = options.page ? parseInt(options.page, 10) : 1;
+  const totalPages = Math.ceil(totalElements / take);
+
+  return {
+    data,
+    totalElements,
+    totalPages,
+    currentPage: page,
+    pageSize: take
+  };
 }
 
 export async function updateProduto(id, data) {

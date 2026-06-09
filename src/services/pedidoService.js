@@ -124,5 +124,20 @@ export async function getHistoricoCliente(clienteId, options = {}) {
 
 export async function listPedidos(options = {}) {
   const query = buildQueryOptions(options, GROUP_NAME);
-  return prisma.pedido.findMany(query);
+  const [data, totalElements] = await Promise.all([
+    prisma.pedido.findMany(query),
+    prisma.pedido.count({ where: query.where })
+  ]);
+  
+  const take = query.take || 10;
+  const page = options.page ? parseInt(options.page, 10) : 1;
+  const totalPages = Math.ceil(totalElements / take);
+
+  return {
+    data,
+    totalElements,
+    totalPages,
+    currentPage: page,
+    pageSize: take
+  };
 }

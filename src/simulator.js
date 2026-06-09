@@ -55,10 +55,11 @@ async function cicloSimulacao(cicloId) {
     console.log(`[PRODUTO] ID: ${produto.id} | Descrição: ${produto.descricao} | Valor: R$ ${produto.valor} | Estoque: ${produto.estoque}`);
 
     // 3. Criar Pedido
-    // Adicionamos { size: 9999 } para contornar a paginação padrão (10 itens) 
-    // que estava impedindo o simulador de encontrar produtos com estoque
-    const clientesExistentes = await listClientes({ size: 9999 });
-    const produtosExistentes = await listProdutos({ size: 9999 });
+    const clientesRes = await listClientes({ size: 9999 });
+    const produtosRes = await listProdutos({ size: 9999 });
+
+    const clientesExistentes = clientesRes.data || [];
+    const produtosExistentes = produtosRes.data || [];
 
     // Filtra produtos que realmente tem estoque disponível
     const produtosDisponiveis = produtosExistentes.filter(p => p.estoque > 0);
